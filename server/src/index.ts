@@ -4,6 +4,7 @@ import dotenv = require('dotenv');
 import { fetchAllCitiesWeather } from './services/weatherService';
 import { rankCitiesByComfort } from './services/comfortIndexService';
 import { getCacheStatus, getAllCacheKeys } from './services/cacheService';
+import { checkJwt } from './middleware/checkJwt';
 
 dotenv.config();
 
@@ -26,7 +27,7 @@ app.get('/api/test-weather', async (req, res) => {
     }
 });
 
-app.get('/api/cities', async (req, res) => {
+app.get('/api/cities', checkJwt, async (req, res) => {
     try {
         const weatherList = await fetchAllCitiesWeather();
         const ranked = rankCitiesByComfort(weatherList);
