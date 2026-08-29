@@ -6,6 +6,7 @@ import { rankCitiesByComfort } from './services/comfortIndexService';
 import { getCacheStatus, getAllCacheKeys } from './services/cacheService';
 import { checkJwt } from './middleware/checkJwt';
 import { getAllHistory } from './services/historyService';
+import { fetchForecastForCity } from './services/forecastService';
 
 dotenv.config();
 
@@ -50,6 +51,16 @@ app.get('/api/debug/cache', async (req, res) => {
 
 app.get('/api/history', checkJwt, (req, res) => {
     res.json(getAllHistory());
+});
+
+app.get('/api/forecast/:cityCode', checkJwt, async (req, res) => {
+    try {
+        const cityCode = req.params.cityCode as string;
+        const points = await fetchForecastForCity(cityCode);
+        res.json(points);
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.listen(PORT, () => {

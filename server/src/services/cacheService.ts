@@ -6,8 +6,12 @@ export function getCached<T>(key: string): T | undefined {
     return cache.get<T>(key);
 }
 
-export function setCached<T>(key: string, value: T): void {
-    cache.set(key, value);
+export function setCached<T>(key: string, value: T, ttlSeconds?: number): void {
+    if (ttlSeconds !== undefined) {
+        cache.set(key, value, ttlSeconds);
+    } else {
+        cache.set(key, value);
+    } 
 }
 
 export function getCacheStatus(key: string): 'HIT' | 'MISS' {

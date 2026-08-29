@@ -238,7 +238,7 @@ function App() {
             return (
               <div
                 key={city.cityCode}
-                className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all"
+                className="bg-white/70 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl border border-white/60 dark:border-slate-700/60 p-5 hover:border-white dark:hover:border-slate-600 hover:shadow-md hover:-translate-y-0.5 transition-all animate-fade-in"
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>
