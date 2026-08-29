@@ -5,6 +5,7 @@ import { fetchAllCitiesWeather } from './services/weatherService';
 import { rankCitiesByComfort } from './services/comfortIndexService';
 import { getCacheStatus, getAllCacheKeys } from './services/cacheService';
 import { checkJwt } from './middleware/checkJwt';
+import { getAllHistory } from './services/historyService';
 
 dotenv.config();
 
@@ -44,6 +45,11 @@ app.get('/api/debug/cache', async (req, res) => {
         status: getCacheStatus(key),
     }));
     res.json({ cacheKeys: status, totalCached: keys.length });;
+});
+
+
+app.get('/api/history', checkJwt, (req, res) => {
+    res.json(getAllHistory());
 });
 
 app.listen(PORT, () => {

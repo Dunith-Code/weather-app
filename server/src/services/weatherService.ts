@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import citiesData from '../data/cities.json';
 import { CityEntry, WeatherData } from '../types/weather';
 import { getCached, setCached } from './cacheService';
+import { recordReading } from './historyService';
 
 // const API_KEY = process.env.OPENWEATHER_API_KEY;
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
@@ -36,6 +37,9 @@ export async function fetchWeatherForCity(cityCode: string): Promise<WeatherData
         clouds: data.clouds.all,
         pressure: data.main.pressure,
     };
+
+    // record this reading
+    recordReading(cityCode, weather.temp);
 
     setCached(cacheKey, weather);
     return weather;

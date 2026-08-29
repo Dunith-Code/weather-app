@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import TemperatureChart from './components/TemperatureChart';
 
 interface CityComfort {
   cityCode: string;
@@ -13,6 +14,8 @@ interface CityComfort {
   comfortIndex: number;
 }
 
+// sorting options
+type SortOption = 'comfort' | 'temp-asc' | 'temp-desc' | 'name';
 
 function getComfortStyle(score: number) {
   if (score >= 85) {
@@ -54,6 +57,13 @@ function App() {
 
   const { isDark, toggle } = useDarkMode();
 
+  // search term and sort state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('comfort');
+
+  const [selectedCity, setSelectedCity] = useState<string>('');
+  const [selectedCityName, setSelectedCityName] = useState<string>('');
+
   useEffect(() => {
     if (!isAuthenticated) {
       setLoading(false);
@@ -75,6 +85,30 @@ function App() {
       .finally(() => setLoading(false));
   }, [isAuthenticated, getAccessTokenSilently]);
 
+  // filtered/sorted cities
+  const visibleCities = useMemo(() => {
+    let result = cities.filter((city) =>
+      city.cityName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    switch (sortBy) {
+      case 'comfort':
+        result = [...result].sort((a, b) => b.comfortIndex - a.comfortIndex);
+        break;
+      case 'temp-asc':
+        result = [...result].sort((a, b) => a.temp - b.temp);
+        break;
+      case 'temp-desc':
+        result = [...result].sort((a, b) => b.temp - a.temp);
+        break;
+      case 'name':
+        result = [...result].sort((a, b) => a.cityName.localeCompare(b.cityName));
+        break;
+    }
+    return result;
+  }, [cities, searchTerm, sortBy]);
+
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
@@ -94,7 +128,7 @@ function App() {
         
           <button
             onClick={() => loginWithRedirect()}
-            className="bg-blue-900 dark:bg-slate-100 text-white dark:text-slate-900 px-6 py-2.5 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity"
+            className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-6 py-2.5 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity"
           >
             Log In
           </button>
@@ -108,9 +142,9 @@ function App() {
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
         <div className="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Weather Comfort Dashboard</h1>
+            <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Weather Comfort Dashboard</h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Weather by comfort index across {cities.length} cities
+              Ranked by comfort index across {cities.length} cities
             </p>
           </div>
 
@@ -140,8 +174,66 @@ function App() {
           </p>
         )}
 
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <input
+            type="text"
+            placeholder="Search city..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300 dark:focus:ring-slate-600"
+          />
+          
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 dark:focus:ring-slate-600"
+          >
+
+            <option value="comfort">Sort: Most comfortable</option>
+            <option value="temp-desc">Sort: Hottest first</option>
+            <option value="temp-asc">Sort: Coldest first</option>
+            <option value="name">Sort: Name (A-Z)</option>
+          </select>
+        </div>
+
+        {/* city selector for chart */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <select
+            value={selectedCity}
+            onChange={(e) => {
+              const code = e.target.value;
+              setSelectedCity(code);
+              const city = cities.find((c) => c.cityCode === code);
+              setSelectedCityName(city ? city.cityName : '');
+            }}
+            className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 dark:focus:ring-slate-600"
+          >
+            <option value="">Select city for chart</option>
+            {cities.map((city) => (
+              <option key={city.cityCode} value={city.cityCode}>
+                {city.cityName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* render chart if city is selected */}
+        {selectedCity && (
+          <div className="mb-6">
+            <TemperatureChart cityCode={selectedCity} cityName={selectedCityName} />
+          </div>
+        )}
+
+        {/* no cities message */}
+        {visibleCities.length === 0 && (
+          <p className="text-slate-400 dark:text-slate-500 text-sm text-center py-12">
+            No cities match "{searchTerm}"
+          </p>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {cities.map((city) => {
+
+          {visibleCities.map((city) => {
             const style = getComfortStyle(city.comfortIndex);
             return (
               <div
