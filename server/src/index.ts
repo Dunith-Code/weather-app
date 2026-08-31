@@ -16,6 +16,18 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Weather Analytics API',
+    endpoints: {
+      health: '/api/health',
+      cities: '/api/cities',
+      forecast: '/api/forecast/:cityCode',
+      cache: '/api/debug/cache'
+    }
+  });
+});
+
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
 });
