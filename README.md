@@ -371,7 +371,7 @@ docker-compose up
 - **Part 1 — Design decision walkthrough:** I explain the Comfort Index formula's evolution (Formula A → B → C) and why I grounded the temperature-humidity interaction in Thom's Discomfort Index rather than an invented constant.
 - **Part 2 — Live extension:** I added Visibility as a new parameter to the formula, live and unscripted. After adding the scoring function (8,000m threshold, 5% weight) and rebalancing the weights, the ranking recalculated correctly, confirming the new parameter is wired in properly.
 
-> 📹 Recording link: https://drive.google.com/file/d/1uinaCygro5cZlGYdN29SDp1wsyjdUCeb/view?usp=sharing
+> Recording link: https://drive.google.com/file/d/1uinaCygro5cZlGYdN29SDp1wsyjdUCeb/view?usp=sharing
 
 ---
 
