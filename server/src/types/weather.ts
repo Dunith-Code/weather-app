@@ -14,4 +14,5 @@ export interface WeatherData {
     windSpeed: number;
     clouds: number;
     pressure: number;
+    visibility: number;
 }

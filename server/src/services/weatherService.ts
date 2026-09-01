@@ -13,6 +13,12 @@ function getApiKey(): string {
     return key;
 }
 
+/**
+ * Fetches current weather data for a single city from OpenWeatherMap
+ * Checks in-memory cache first; if not cached, calls the API
+ * @param cityCode - OpenWeatherMap city ID
+ * @returns WeatherData object
+ */
 export async function fetchWeatherForCity(cityCode: string): Promise<WeatherData> {
     const cacheKey = `weather:${cityCode}`;
     const cached = getCached<WeatherData>(cacheKey);
@@ -36,6 +42,7 @@ export async function fetchWeatherForCity(cityCode: string): Promise<WeatherData
         windSpeed: data.wind.speed,
         clouds: data.clouds.all,
         pressure: data.main.pressure,
+        visibility: data.visibility,
     };
 
     // record this reading

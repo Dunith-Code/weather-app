@@ -12,6 +12,7 @@ function makeWeather(overrides: Partial<WeatherData> = {}): WeatherData {
         windSpeed: 3,
         clouds: 40,
         pressure: 1013,
+        visibility: 10000,
         ...overrides,
     };
 }
@@ -53,6 +54,20 @@ describe('calculateComfortIndex', () => {
         const decimalPlaces = (score.toString().split('.')[1] || '').length;
         expect(decimalPlaces).toBeLessThanOrEqual(2);
     });
+
+    test('visibility penalty: low visibility scores lower than clear visibility', () => {
+        const clearWeather = makeWeather({
+            temp: 22, humidity: 50, windSpeed: 3, clouds: 30,
+            pressure: 1013, visibility: 10000,
+        });
+        const foggyWeather = makeWeather({
+            temp: 22, humidity: 50, windSpeed: 3, clouds: 30,
+            pressure: 1013, visibility: 1500,
+       });
+        const clearScore = calculateComfortIndex(clearWeather);
+        const foggyScore = calculateComfortIndex(foggyWeather);
+        expect(clearScore).toBeGreaterThan(foggyScore);
+        });
 });
 
 describe('rankCitiesByComfort', () => {
