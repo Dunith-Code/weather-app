@@ -26,14 +26,13 @@ This is a full-stack weather analytics application that retrieves live weather d
 
 | Layer | Technology |
 |---|---|
-| Backend | Node.js, Express, TyperScript |
+| Backend | Node.js, Express, TypeScript |
 | Frontend | React, TypeScript, Vite, Tailwind CSS v4 |
 | Authentication | Auth0 (login/logout, MFA, JWT verification) |
 | Caching | node-cache (in-memory) |
 |Charts | Recharts (5-day forecast visualization) |
 | Testing | Jest and ts-jest |
 | Containerization | Docker |
-||
 
 I chose this stack because I'm currently studying React, TypeScript, and Node/Express, and I wanted to build something real rather than just follow tutorials. Auth0 was the specified authentication provider. This let me focus my time on the parts that mattered most: designing the Comfort Index formula and getting the Auth0 integration working correctly.
 
@@ -161,11 +160,11 @@ npm run preview     # preview production build
 
 ## Comfort Index Formula
 
-**What it is:** a 0–100 score combining four weather factors into a single ranking metric for each city.
+**What it is:** a 0–100 score combining five weather factors into a single ranking metric for each city.
 
 **Why I designed it this way:** comfort perception isn't one number you can measure directly, it's a combination of how hot/humid it feels, how windy, how cloudy, and how stable the air pressure is. I wanted each factor's weight to reflect how strongly it's backed by evidence, not just my own guess.
  
-**How it works (the four components):**
+**How it works (the five components):**
  
 **1. Temperature and Humidity (70% weight)**: computed via **Thom's Discomfort Index (1959)**, a published formula for human heat perception:
 ```
@@ -180,6 +179,9 @@ This models evaporative cooling mathematically: at low humidity, more heat is su
 **4. Pressure (10% weight)**: standard atmospheric pressure (~1013 hPa) is associated with stable, fair weather.
 - Ideal range: 1010–1020 hPa
 - Penalized: low pressure (associated with storms) and unusually high pressure
+
+**5. Visibility (5% weight)**: added live during the screen recording. OpenWeatherMap reports this directly, in meters, capped at 10,000. I used 8,000m as the "good visibility" threshold, based on the general meteorological convention for that term.
+
 ```
 Temperature score:  ideal 20–26°C → 100; else 100 − 4 × (°C outside range), floored at 0
 Humidity score:     ideal 30–60% → 100; else 100 − 1.5 × (% outside range)
@@ -187,6 +189,7 @@ Humidity score:     ideal 30–60% → 100; else 100 − 1.5 × (% outside range
 Wind score:         ideal 2–5 m/s → 100; else 100 − 8 × (m/s outside range), floored at 0
 Cloud score:        ideal 20–60% → 100; else 100 − 0.5 × (% outside range), floored at 0
 Pressure score:     ideal 1010–1020 hPa → 100; else 100 − 0.5 × (hPa outside range), floored at 0
+Visibility score:   ideal ≥ 8,000 m → 100; else 100 − (8,000 - visibility) × (100 / 8,000)
 ```
  
 ```
@@ -206,9 +209,10 @@ An earlier hand-tuned design and an alternative Gaussian-based model were also e
 ## Trade-offs Considered
  
 - Thom's Discomfort Index and ASHRAE 55 were designed primarily for indoor/controlled environments; applying them to outdoor weather API data is a reasonable adaptation, not a perfect fit.
-- Wind, cloud, and pressure scoring use hand-picked ideal ranges rather than a published formula, since no equivalent standard exists for these the way Thom's formula exists for temperature/humidity.
+- Wind, cloud, pressure, and visibility scoring use hand-picked ideal ranges rather than a published formula, since no equivalent standard exists for these the way Thom's formula exists for temperature/humidity.
 - In-memory caching (node-cache) was chosen over Redis for simplicity, no extra infrastructure needed for a 10-city dataset. Would not scale to a distributed/multi-instance deployment.
 - Temperature trend graphs use OpenWeatherMap's free 5-day/3-hour forecast endpoint instead of true historical data, which the free tier doesn't provide at all.
+
 ---
  
 ## Cache Design

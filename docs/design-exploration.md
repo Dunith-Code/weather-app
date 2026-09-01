@@ -60,7 +60,7 @@ ComfortIndex = clamp(baseScore − windPenalty + cloudAdjustment, 0, 100)
 
 ## Formula C: Thom's Discomfort Index (implemented, this is the current code)
 
-**What it is:** my final design, adopted after deciding the temperature-humidity interaction should rest on a published formula rather than a hand-picked constant. combined with three secondary factors wind, cloud cover, and pressure each scored using the same ideal-range, linear-penalty structure.
+**What it is:** my final design, adopted after deciding the temperature-humidity interaction should rest on a published formula rather than a hand-picked constant, combined with four secondary factors, wind, cloud cover, pressure, and visibility, each scored using the same ideal-range, linear-penalty structure.
 
 **Temperature + humidity**, via Thom's Discomfort Index (1959):
 
@@ -84,12 +84,12 @@ ComfortIndex = 0.65 × discomfortIndexScore(Id)
              + 0.05 × visibilityScore
 ```
 
-**Why this is the strongest version:** the temperature-humidity interaction is no longer an invented multiplier, it comes from a real, citable 1959 formula used in heat-discomfort research, while retaining the testable piecewise structure that made Formula A practical in the first place. Wind, cloud, and pressure round out the formula as reasonable secondary factors, each with its own stated justification (see below), rather than being treated as equally rigorous to the cited temperature-humidity term.
+**Why this is the strongest version:** the temperature-humidity interaction is no longer an invented multiplier, it comes from a real, citable 1959 formula used in heat-discomfort research, while retaining the testable piecewise structure that made Formula A practical in the first place. Wind, cloud, pressure, and visibility round out the formula as reasonable secondary factors, each with its own stated justification (see below), rather than being treated as equally rigorous to the cited temperature-humidity term.
 
 ---
 ## Why These Specific Factors and Weights
  
-I didn't pick wind, cloud, and pressure at random, each has a stated reason for being included, even though none of them carry a citation as strong as Thom's formula:
+I didn't pick wind, cloud, pressure, and visibility at random, each has a stated reason for being included, even though none of them carry a citation as strong as Thom's formula:
  
 - **Wind** is included because ANSI/ASHRAE Standard 55, the actual engineering standard for human thermal comfort — names air speed as a core environmental factor alongside temperature and humidity. I don't have a published formula for scoring outdoor wind comfort the way I do for temperature/humidity, so I built my own ideal-range scoring for it, but its *inclusion* is citation-backed.
 - **Cloud cover** is not part of ASHRAE 55, which is an indoor-focused standard. I added it myself as a reasonable extension accounting for outdoor solar exposure, moderate cloud cover (some shade, not fully overcast) plausibly affects how comfortable direct sun or a fully grey sky feels, even without a cited source for the exact relationship.
@@ -100,7 +100,7 @@ I didn't pick wind, cloud, and pressure at random, each has a stated reason for 
 
 ## Why I Chose Formula C
 
-Formula A's structure (ideal range + linear penalty, easy to test and explain) was worth keeping, the problem was specifically the uncited interaction multiplier. Formula C keeps that same testable structure for wind, cloud, and pressure, while replacing the weakest part (the humidity-temperature interaction) with a real cited formula. Formula B was more physically elegant but sacrificed exactly the two properties that mattered most given my constraints, live explainability and clean test boundaries.
+Formula A's structure (ideal range + linear penalty, easy to test and explain) was worth keeping, the problem was specifically the uncited interaction multiplier. Formula C keeps that same testable structure for wind, cloud, pressure, and visibility, while replacing the weakest part (the humidity-temperature interaction) with a real cited formula. Formula B was more physically elegant but sacrificed exactly the two properties that mattered most given my constraints — live explainability and clean test boundaries.
 
 ---
 
