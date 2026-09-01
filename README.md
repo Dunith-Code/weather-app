@@ -154,7 +154,6 @@ npm run preview     # preview production build
 | MFA | OTP primary, Email secondary, enforcement: Always |
 | Public Signups | Disabled |
 | Test User | `careers@fidenz.com` / `Pass#fidenz` |
-||
  
 > **Note:** if your Auth0 tenant is new, the custom API's user-delegated access policy must be explicitly set to "Allow All Applications." Without this, a correctly configured SPA still fails with `invalid_request: Client is not authorized to access resource server` — see Limitations for details.
 
@@ -304,6 +303,8 @@ Ran all test suites.
 - **Visual polish**: color-coded comfort levels (emerald/amber/rose), glassmorphism styling, subtle fade-in animations. *Why:* makes the ranking scannable at a glance rather than requiring the viewer to read every number. *How:* a `getComfortStyle()` helper maps score thresholds to Tailwind color classes; translucency and backdrop blur are applied via Tailwind utilities.
  
 - **Dockerized deployment**: multi-stage builds for both frontend and backend, so final images don't contain source code or dev dependencies.
+
+- **Live-extended Comfort Index**: added Visibility as a fifth factor during the required screen recording, live and unscripted, see [Comfort Index Formula](#comfort-index-formula) and `docs/design-exploration.md` for the full story
  
 ---
  
@@ -354,7 +355,7 @@ docker-compose up -d        # Run in background
 docker-compose down         # Stop all services
 ```
 
-## Docker Images on Docker Hub
+### Docker Images on Docker Hub
 
 | Service | Image |
 |---------|-------|
