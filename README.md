@@ -191,10 +191,11 @@ Pressure score:     ideal 1010–1020 hPa → 100; else 100 − 0.5 × (hPa outs
 ```
  
 ```
-ComfortIndex = 0.70 × discomfortIndexScore(Id)
+ComfortIndex = 0.65 × discomfortIndexScore(Id)
              + 0.10 × windScore
              + 0.10 × cloudScore
              + 0.10 × pressureScore
+             + 0.05 × visibilityScore
 ```
  
 **What this achieves:** temperature+humidity dominates (70%) because it's backed by a cited, published formula rather than an invented multiplier. The remaining 30% is split evenly across wind, cloud, and pressure, each a reasonable, self-designed extension rather than a cited relationship.
