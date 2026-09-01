@@ -1,4 +1,4 @@
-# Weather Analytics App
+# Weather Analytics Application
 
 This is a full-stack weather analytics application that retrieves live weather data for 10+ cities, computes a custom Comfort Index score for each, and presents a ranked, authenticated dashboard with forecast trends.
 
