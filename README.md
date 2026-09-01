@@ -197,9 +197,9 @@ ComfortIndex = 0.65 × discomfortIndexScore(Id)
              + 0.05 × visibilityScore
 ```
  
-**What this achieves:** temperature+humidity dominates (70%) because it's backed by a cited, published formula rather than an invented multiplier. The remaining 30% is split evenly across wind, cloud, and pressure, each a reasonable, self-designed extension rather than a cited relationship.
+**What this achieves:** temperature+humidity dominates (65%) because it's backed by a cited, published formula rather than an invented multiplier. The remaining 35% is split across wind, cloud, pressure, and visibility, each a reasonable, self-designed extension rather than a cited relationship. Visibility carries a smaller 5% weight since it was added as a secondary factor, not a primary driver like temperature or humidity.
  
-An earlier hand-tuned design and an alternative Gaussian-based model were also explored before settling on this version, see [`docs/design-exploration.md`](./docs/design-exploration.md) for the full comparison and reasoning.
+An earlier hand-tuned design and an alternative Gaussian-based model were also explored before settling on this version, see [`docs/design-exploration.md`](./docs/design-exploration.md) for the full comparison and reasoning, including how Visibility was added live during the screen recording.
 
 ---
 
