@@ -11,12 +11,20 @@ interface CityComfort {
   humidity: number;
   windSpeed: number;
   clouds: number;
+  pressure: number;
+  visibility: number;
   comfortIndex: number;
 }
 
 // sorting options
 type SortOption = 'comfort' | 'temp-asc' | 'temp-desc' | 'name';
 
+/**
+ * Color-codes the comfort level badge based on the score
+ * >= 85: Comfortable (emerald)
+ * >= 65: Moderate (amber)
+ * < 65: Uncomfortable (rose)
+ */
 function getComfortStyle(score: number) {
   if (score >= 85) {
     return { badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400', bar: 'bg-emerald-500', label:'Comfortable' };
@@ -279,6 +287,16 @@ function App() {
                   <div className="flex justify-between">
                     <span>Cloud cover</span>
                     <span className="font-medium text-slate-700 dark:text-slate-300">{city.clouds}%</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>Pressure</span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">{city.pressure} hPa</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span>Visibility</span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">{(city.visibility / 1000).toFixed(1)} km</span>
                   </div>
                 </div>
 

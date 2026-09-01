@@ -28,6 +28,7 @@ app.get('/', (req, res) => {
   });
 });
 
+// Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
 });
@@ -41,6 +42,7 @@ app.get('/api/test-weather', async (req, res) => {
     }
 });
 
+// Protected route, requires valid JWT from Auth0
 app.get('/api/cities', checkJwt, async (req, res) => {
     try {
         const weatherList = await fetchAllCitiesWeather();

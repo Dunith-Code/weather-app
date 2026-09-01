@@ -42,7 +42,7 @@ export async function fetchWeatherForCity(cityCode: string): Promise<WeatherData
         windSpeed: data.wind.speed,
         clouds: data.clouds.all,
         pressure: data.main.pressure,
-        visibility: data.visibility,
+        visibility: data.visibility ?? 8000,
     };
 
     // record this reading
