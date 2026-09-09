@@ -82,15 +82,28 @@ function visibilityScoreFn(visibility: number): number {
     return clampScore(100 - deviation * PENALTY_PER_UNIT);
 }
 
+// dew point
+function dewPointScoreFn(dewPoint: number): number {
+  // Ideal: < 15°C (comfortable)
+  const IDEAL_MAX = 15;
+  const PENALTY_PER_UNIT = 5;
+
+  if (dewPoint <= IDEAL_MAX) return 100;
+
+  const deviation = dewPoint - IDEAL_MAX;
+  return clampScore(100 - deviation * PENALTY_PER_UNIT);
+}
+
 export function calculateComfortIndex(weather: WeatherData): number {
     const id = discomfortIndex(weather.temp, weather.humidity);
     const tempHumidityScore = discomfortIndexScore(id);
     const wind = windScoreFn(weather.windSpeed);
     const cloud = cloudScoreFn(weather.clouds);
     const pressure = pressureScoreFn(weather.pressure);
+    const dewPoint = dewPointScoreFn(weather.dewPoint);
     const visibility = visibilityScoreFn(weather.visibility);
 
-    const comfort = 0.65 * tempHumidityScore + 0.10 * wind + 0.10 * cloud + 0.10 * pressure + 0.05 * visibility;
+    const comfort = 0.55 * tempHumidityScore + 0.10 * wind + 0.10 * cloud + 0.10 * pressure + 0.05 * visibility + 0.10 * dewPoint;
     return Math.round(comfort * 100) / 100;
 }
 

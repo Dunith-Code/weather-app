@@ -15,4 +15,5 @@ export interface WeatherData {
     clouds: number;
     pressure: number;
     visibility: number;
+    dewPoint: number;
 }

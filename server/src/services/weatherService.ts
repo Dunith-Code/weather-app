@@ -13,6 +13,10 @@ function getApiKey(): string {
     return key;
 }
 
+function calculateDewPoint(temp: number, humidity: number): number {
+  return temp - (100 - humidity) / 5;
+}
+
 /**
  * Fetches current weather data for a single city from OpenWeatherMap
  * Checks in-memory cache first; if not cached, calls the API
@@ -43,6 +47,7 @@ export async function fetchWeatherForCity(cityCode: string): Promise<WeatherData
         clouds: data.clouds.all,
         pressure: data.main.pressure,
         visibility: data.visibility ?? 8000,
+        dewPoint: calculateDewPoint(data.main.temp, data.main.humidity),
     };
 
     // record this reading

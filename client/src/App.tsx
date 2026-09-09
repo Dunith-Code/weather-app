@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import TemperatureChart from './components/TemperatureChart';
+import WeatherBackground from './components/WeatherBackground';
 
 interface CityComfort {
   cityCode: string;
@@ -14,6 +15,7 @@ interface CityComfort {
   pressure: number;
   visibility: number;
   comfortIndex: number;
+  dewPoint: number;
 }
 
 // sorting options
@@ -145,9 +147,13 @@ function App() {
     );
   }
 
+  // Get the condition from the first city (or a default)
+  const mainCondition = cities.length > 0 ? cities[0].description : 'clear sky';
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+    <WeatherBackground condition={mainCondition}>
+      <div className="min-h-screen transition-colors">
+        <header className="border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-6 py-5 flex justify-between items-center">
           <div>
             <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Weather Comfort Dashboard</h1>
@@ -295,9 +301,16 @@ function App() {
                   </div>
 
                   <div className="flex justify-between">
+                    <span>Dew Point</span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">
+                      {city.dewPoint.toFixed(1)}°C
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between">
                     <span>Visibility</span>
                     <span className="font-medium text-slate-700 dark:text-slate-300">{(city.visibility / 1000).toFixed(1)} km</span>
-                  </div>
+                  </div> 
                 </div>
 
                 <div>
@@ -318,6 +331,7 @@ function App() {
         </div>
       </main>
     </div>
+    </WeatherBackground>
   );
 }
 

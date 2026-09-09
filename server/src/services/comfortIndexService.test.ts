@@ -13,6 +13,7 @@ function makeWeather(overrides: Partial<WeatherData> = {}): WeatherData {
         clouds: 40,
         pressure: 1013,
         visibility: 10000,
+        dewPoint: 10,
         ...overrides,
     };
 }
