@@ -1,4 +1,18 @@
-# Weather Analytics Application
+# 🌤️ Weather Analytics Application
+
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=white)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.x-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.x-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![Auth0](https://img.shields.io/badge/Auth0-Integrated-EB5424?logo=auth0&logoColor=white)](https://auth0.com/)
+[![JWT](https://img.shields.io/badge/JWT-Authenticated-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-Published-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/)
+[![Jest](https://img.shields.io/badge/Jest-Tested-C21325?logo=jest&logoColor=white)](https://jestjs.io/)
+[![Recharts](https://img.shields.io/badge/Recharts-Charts-22B5BF?logo=chartdotjs&logoColor=white)](https://recharts.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This is a full-stack weather analytics application that retrieves live weather data for 10+ cities, computes a custom Comfort Index score for each, and presents a ranked, authenticated dashboard with forecast trends.
 
@@ -22,7 +36,7 @@ This is a full-stack weather analytics application that retrieves live weather d
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -38,7 +52,7 @@ I chose this stack because I'm currently studying React, TypeScript, and Node/Ex
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ### Use CASE Diagram
 - What a logged-in user can do with the system
@@ -62,7 +76,7 @@ I chose this stack because I'm currently studying React, TypeScript, and Node/Ex
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 weather-app
@@ -102,7 +116,7 @@ weather-app
 
 ---
 
-## Setup Instructions
+## 🚀 Setup Instructions
 
 ### Backend
 ```bash
@@ -140,7 +154,7 @@ npm run build       # production build
 npm run preview     # preview production build
 ```
 
-### Auth0 Configuration
+### 🔐 Auth0 Configuration
 
 | Setting | Value |
 |---|---|
@@ -158,15 +172,15 @@ npm run preview     # preview production build
 
 ---
 
-## Comfort Index Formula
+## 🧮 Comfort Index Formula
 
 **What it is:** a 0–100 score combining five weather factors into a single ranking metric for each city.
 
-**Why I designed it this way:** comfort perception isn't one number you can measure directly, it's a combination of how hot/humid it feels, how windy, how cloudy, and how stable the air pressure is. I wanted each factor's weight to reflect how strongly it's backed by evidence, not just my own guess.
+**Why I designed it this way:** comfort perception isn't one number you can measure directly — it's a combination of how hot/humid it feels, how windy, how cloudy, how stable the air pressure is, how far you can see, and how much moisture is in the air. I wanted each factor's weight to reflect how strongly it's backed by evidence, not just my own guess.
  
 **How it works (the five components):**
  
-**1. Temperature and Humidity (70% weight)**: computed via **Thom's Discomfort Index (1959)**, a published formula for human heat perception:
+**1. Temperature and Humidity (55% weight)** — computed via **Thom's Discomfort Index (1959)** , a published formula for human heat perception:
 ```
 Id = T − 0.0055 × (100 − RH) × (T − 14.5)
 ```
@@ -182,6 +196,10 @@ This models evaporative cooling mathematically: at low humidity, more heat is su
 
 **5. Visibility (5% weight)**: added live during the screen recording. OpenWeatherMap reports this directly, in meters, capped at 10,000. I used 8,000m as the "good visibility" threshold, based on the general meteorological convention for that term.
 
+**6. Dew Point (5% weight):** calculated from temperature and humidity using the formula `Dew Point = T - ((100 - RH) / 5)`. Higher dew point means more moisture in the air, which makes it feel more uncomfortable. Ideal range: below 15°C; penalized above that threshold.
+
+### Scoring Functions
+
 ```
 Temperature score:  ideal 20–26°C → 100; else 100 − 4 × (°C outside range), floored at 0
 Humidity score:     ideal 30–60% → 100; else 100 − 1.5 × (% outside range)
@@ -190,23 +208,28 @@ Wind score:         ideal 2–5 m/s → 100; else 100 − 8 × (m/s outside rang
 Cloud score:        ideal 20–60% → 100; else 100 − 0.5 × (% outside range), floored at 0
 Pressure score:     ideal 1010–1020 hPa → 100; else 100 − 0.5 × (hPa outside range), floored at 0
 Visibility score:   ideal ≥ 8,000 m → 100; else 100 − (8,000 - visibility) × (100 / 8,000)
+Dew Point score:    ideal ≤ 15°C → 100; else 100 − 5 × (°C above 15), floored at 0
 ```
- 
+
+
+### Final Formula
+
 ```
-ComfortIndex = 0.65 × discomfortIndexScore(Id)
+ComfortIndex = 0.55 × discomfortIndexScore(Id)
              + 0.10 × windScore
              + 0.10 × cloudScore
              + 0.10 × pressureScore
              + 0.05 × visibilityScore
+             + 0.10 × dewPointScore
 ```
  
-**What this achieves:** temperature+humidity dominates (65%) because it's backed by a cited, published formula rather than an invented multiplier. The remaining 35% is split across wind, cloud, pressure, and visibility, each a reasonable, self-designed extension rather than a cited relationship. Visibility carries a smaller 5% weight since it was added as a secondary factor, not a primary driver like temperature or humidity.
- 
-An earlier hand-tuned design and an alternative Gaussian-based model were also explored before settling on this version, see [`docs/design-exploration.md`](./docs/design-exploration.md) for the full comparison and reasoning, including how Visibility was added live during the screen recording.
+**What this achieves:** temperature+humidity dominates (55%) because it's backed by a cited, published formula rather than an invented multiplier. The remaining 45% is split across wind (10%), cloud (10%), pressure (10%), visibility (5%), and dew point (10%). Visibility carries a smaller 5% weight since it was added as a secondary factor, not a primary driver like temperature or humidity. Dew point gets 10% because it directly measures moisture content in the air, which is a significant factor in perceived comfort.
+
+An earlier hand-tuned design and an alternative Gaussian-based model were also explored before settling on this version — see `docs/design-exploration.md` for the full comparison and reasoning, including how Visibility was added live during the screen recording.
 
 ---
 
-## Trade-offs Considered
+## ⚖️ Trade-offs Considered
  
 - Thom's Discomfort Index and ASHRAE 55 were designed primarily for indoor/controlled environments; applying them to outdoor weather API data is a reasonable adaptation, not a perfect fit.
 - Wind, cloud, pressure, and visibility scoring use hand-picked ideal ranges rather than a published formula, since no equivalent standard exists for these the way Thom's formula exists for temperature/humidity.
@@ -215,7 +238,7 @@ An earlier hand-tuned design and an alternative Gaussian-based model were also e
 
 ---
  
-## Cache Design
+## 🗃️ Cache Design
  
 | Cache type | Key pattern | TTL | Reason |
 |---|---|---|---|
@@ -231,7 +254,7 @@ I verified this by confirming identical values across repeated calls within the 
  
 ---
  
-## Testing
+## 🧪 Testing
  
 **What's tested:** the `calculateComfortIndex` and `rankCitiesByComfort` functions in `comfortIndexService.ts`, both pure functions with no external dependencies, which makes them fast and reliable to test in isolation.
  
@@ -283,7 +306,7 @@ Ran all test suites.
  
 ---
  
-## Limitations
+## ⚠️ Limitations
  
 1. **Auth0 API Access Policy**: newer Auth0 tenants require the custom API's user-delegated access policy to be explicitly set to "Allow All Applications" otherwise a correctly configured SPA still receives `invalid_request: Client is not authorized to access resource server`, even with correct Domain/Client ID/Audience values. This is a recently introduced Auth0 feature not covered by most existing tutorials.
 2. **MFA via Email requires a primary factor first**: Auth0 does not allow Email to be enabled as a standalone MFA factor — it must be a secondary/fallback option alongside a primary factor (OTP, in this implementation).
@@ -294,7 +317,7 @@ Ran all test suites.
 7. **Visibility data from OpenWeatherMap's free tier**, often defaults to 10,000 meters (10km) for many cities when no specific data is available. This is a limitation of the free API, not the application logic. The visibility parameter still functions correctly when actual data is provided (e.g., during fog, haze, or heavy rain).
 ---
  
-## Features Implemented
+## ✨ Features Implemented
  
 - **Dark mode**: persisted via localStorage, respects OS preference by default. *Why:* a small but expected UX detail for a modern dashboard. *How:* a custom `useDarkMode` hook toggles a `.dark` class on `<html>`, which Tailwind's `dark:` variants respond to.
  
@@ -308,11 +331,13 @@ Ran all test suites.
  
 - **Dockerized deployment**: multi-stage builds for both frontend and backend, so final images don't contain source code or dev dependencies.
 
-- **Live-extended Comfort Index**: added Visibility as a fifth factor during the required screen recording, live and unscripted, see [Comfort Index Formula](#comfort-index-formula) and `docs/design-exploration.md` for the full story
+- **Live-extended Comfort Index**: added Visibility as a fifth factor during the required screen recording, live and unscripted, see [Comfort Index Formula](#comfort-index-formula) and `docs/design-exploration.md` for the full story.
+
+- **Dynamic weather backgrounds**: background videos and glassmorphism effects change based on current weather condition (sunny, rainy, cloudy, thunderstorm, etc.).
  
 ---
  
-## API Endpoints
+## 📡 API Endpoints
  
 | Method | Endpoint | Auth required | Description |
 |---|---|---|---|
@@ -323,7 +348,7 @@ Ran all test suites.
  
 ---
 
-## Docker Setup
+## 🐳 Docker Setup
  
 ### Prerequisites
 - Docker Desktop (or Docker Engine + Compose)
@@ -373,7 +398,7 @@ docker-compose up
 
 ---
 
-## Live Recording
+## 🎥 Live Recording
 - **Part 1 — Design decision walkthrough:** I explain the Comfort Index formula's evolution (Formula A → B → C) and why I grounded the temperature-humidity interaction in Thom's Discomfort Index rather than an invented constant.
 - **Part 2 — Live extension:** I added Visibility as a new parameter to the formula, live and unscripted. After adding the scoring function (8,000m threshold, 5% weight) and rebalancing the weights, the ranking recalculated correctly, confirming the new parameter is wired in properly.
 
